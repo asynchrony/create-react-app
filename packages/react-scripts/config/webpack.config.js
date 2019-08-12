@@ -40,6 +40,8 @@ const postcssNormalize = require('postcss-normalize');
 
 const appPackageJson = require(paths.appPackageJson);
 
+const tailwindcss = require('tailwindcss');
+
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 // Some apps do not need the benefits of saving a web request, so not inlining the chunk
@@ -112,9 +114,13 @@ module.exports = function(webpackEnv) {
           ident: 'postcss',
           plugins: () => [
             require('postcss-flexbugs-fixes'),
+            tailwindcss('./src/lib/config/tailwind.config.js'),
             require('postcss-preset-env')({
               autoprefixer: {
                 flexbox: 'no-2009',
+              },
+              features: {
+                'nesting-rules': true,
               },
               stage: 3,
             }),
@@ -412,7 +418,10 @@ module.exports = function(webpackEnv) {
                 // @remove-on-eject-begin
                 babelrc: false,
                 configFile: false,
-                presets: [require.resolve('babel-preset-react-app')],
+                presets: [
+                  require.resolve('babel-preset-react-app'),
+                  ['@babel/env', { targets: { node: 6 } }],
+                ],
                 // Make sure we have a unique cache identifier, erring on the
                 // side of caution.
                 // We remove this when the user ejects because the default
@@ -467,6 +476,7 @@ module.exports = function(webpackEnv) {
                     require.resolve('babel-preset-react-app/dependencies'),
                     { helpers: true },
                   ],
+                  ['@babel/env', { targets: { node: 6 } }],
                 ],
                 cacheDirectory: true,
                 // See #6846 for context on why cacheCompression is disabled
