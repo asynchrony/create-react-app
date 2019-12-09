@@ -33,6 +33,8 @@ module.exports = {
           };
         }),
       };`;
+    } else if (filename.match(/\.xml$/)) {
+      return `module.exports = { process: content => "module.exports = " + JSON.stringify(content) }`;
     }
 
     return `module.exports = ${assetFilename};`;
